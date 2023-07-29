@@ -51,7 +51,6 @@ const menuTemplate = [
 				click: () => createWindow(''),
 				accelerator: 'CommandOrControl+N',
 			},
-			{ role: 'toggleDevTools' },
 		],
 	},
 	{
@@ -71,6 +70,12 @@ const menuTemplate = [
 				label: 'Go forward',
 				click: () => send('goForward'),
 				accelerator: 'CommandOrControl+Right',
+			},
+			{ type: 'separator' },
+			{
+				label: 'Inspect',
+				click: () => send('openDevTools'),
+				accelerator: 'CommandOrControl+Alt+I',
 			},
 		],
 	},
