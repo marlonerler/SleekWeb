@@ -741,9 +741,8 @@ input:focus {
   top: 0rem;
   left: var(--header-width);
   height: var(--header-height);
-  right: 1rem;
+  right: 0rem;
   -webkit-app-region: drag;
-  border-bottom: var(--border);
 }
 .window-draggers:hover {
   background: var(--background-alt);
@@ -758,8 +757,6 @@ webview {
   border-top-right-radius: var(--window-corners);
   border-bottom-left-radius: var(--window-corners);
   border-bottom-right-radius: var(--window-corners);
-  border-bottom: var(--border);
-  border-left: var(--border);
-  border-right: var(--border);
+  border: var(--border);
   overflow: hidden;
 }
