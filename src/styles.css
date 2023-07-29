@@ -44,6 +44,7 @@ input {
 
 	font-size: .8rem !important;
 
+	border-radius: 0rem !important;
 	border-top-left-radius: var(--window-corners) !important;
 	border-top-right-radius: var(--window-corners) !important;
 

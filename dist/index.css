@@ -723,6 +723,7 @@ input {
   display: flex;
   align-items: center;
   font-size: .8rem !important;
+  border-radius: 0rem !important;
   border-top-left-radius: var(--window-corners) !important;
   border-top-right-radius: var(--window-corners) !important;
   background: var(--background) !important;

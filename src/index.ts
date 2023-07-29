@@ -10,6 +10,9 @@ import {
 } from '@frugal-ui/base';
 import {processAddress} from './helpers';
 import './styles.css';
+import { API } from './preload';
+
+declare const electron: typeof API;
 
 export function main() {
 	const inputValue = new State('');
@@ -52,6 +55,14 @@ export function main() {
 					self.listen('dom-ready', () => {
 						self.createBinding(currentUrl, (newValue: string) => {
 							self.loadURL(processAddress(newValue));
+						});
+
+						electron.onPageMessage((action) => {
+							try {
+								self[action]();
+							} catch {
+								console.error(`Error with ${action}`, self[action]);
+							}
 						});
 					})
 						.listen('page-title-updated', () => {

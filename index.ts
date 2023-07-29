@@ -1,5 +1,7 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
+import Path from 'path';
 
+// Create
 function createWindow(params: string) {
 	const window = new BrowserWindow({
 		width: 1200,
@@ -15,6 +17,7 @@ function createWindow(params: string) {
 
 		webPreferences: {
 			webviewTag: true,
+			preload: Path.join(process.cwd(), 'src', 'preload.js'),
 		},
 	});
 
@@ -28,6 +31,54 @@ function createWindow(params: string) {
 	});
 }
 
+// Communication
+function send(message: string) {
+	BrowserWindow.getFocusedWindow()?.webContents.send('page', message);
+}
+
+// Menu
+const menuTemplate = [
+	{ role: 'appMenu' },
+	{ role: 'fileMenu' },
+	{ role: 'editMenu' },
+	{
+		label: 'View',
+		submenu: [
+			{ role: 'togglefullscreen' },
+			{ type: 'separator' },
+			{
+				label: 'New window',
+				click: () => createWindow(''),
+				accelerator: 'CommandOrControl+N',
+			},
+			{ role: 'toggleDevTools' },
+		],
+	},
+	{
+		label: 'Page',
+		submenu: [
+			{
+				label: 'Reload',
+				click: () => send('reload'),
+				accelerator: 'CommandOrControl+R',
+			},
+			{
+				label: 'Go back',
+				click: () => send('goBack'),
+				accelerator: 'CommandOrControl+Left',
+			},
+			{
+				label: 'Go forward',
+				click: () => send('goForward'),
+				accelerator: 'CommandOrControl+Right',
+			},
+		],
+	},
+];
+const menu = Menu.buildFromTemplate(menuTemplate as any);
+Menu.setApplicationMenu(menu);
+
+// Startup
 app.whenReady().then(() => {
 	createWindow('');
 
@@ -37,5 +88,5 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', function () {
-	if (process.platform !== 'darwin') app.quit();
+	if (process.platform != 'darwin') app.quit();
 });
