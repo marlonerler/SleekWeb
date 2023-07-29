@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "start": "tsc; electron .",
+    "build": "esbuild src/index.ts --format=iife --global-name=APP --bundle --outdir=dist --loader:.woff=file --loader:.woff2=file --loader:.ttf=file --loader:.otf=file"
+  },
+  "devDependencies": {
+    "electron": "^25.3.2"
+  },
+  "dependencies": {
+    "@frugal-ui/base": "^1.2.4",
+    "@frugal-ui/fds": "^0.0.1-beta2"
+  }
+}
