@@ -32,25 +32,51 @@ function createWindow(params: string) {
 }
 
 // Communication
-function send(message: string) {
-	BrowserWindow.getFocusedWindow()?.webContents.send('page', message);
+function send(channel: string, message: string) {
+	BrowserWindow.getFocusedWindow()?.webContents.send(channel, message);
 }
 
 // Menu
 const menuTemplate = [
-	{ role: 'appMenu' },
-	{ role: 'fileMenu' },
+	{
+		role: 'appMenu',
+		submenu: [
+			{ role: 'about' },
+			{ type: 'separator' },
+			{ role: 'services' },
+			{ type: 'separator' },
+			{ role: 'hide' },
+			{ role: 'hideOthers' },
+			{ role: 'unhide' },
+			{ type: 'separator' },
+			{
+				label: 'Settings...',
+				accelerator: 'CommandOrControl+,',
+				click: () => send('nav', 'settings'),
+			},
+			{ type: 'separator' },
+			{ role: 'quit' },
+		],
+	},
+	{
+		role: 'fileMenu',
+		submenu: [
+			{
+				label: 'New window',
+				click: () => createWindow(''),
+				accelerator: 'CommandOrControl+N',
+			},
+			{ type: 'separator' },
+			{ role: 'close' },
+		],
+	},
 	{ role: 'editMenu' },
 	{
 		label: 'View',
 		submenu: [
 			{ role: 'togglefullscreen' },
 			{ type: 'separator' },
-			{
-				label: 'New window',
-				click: () => createWindow(''),
-				accelerator: 'CommandOrControl+N',
-			},
+			//{ role: 'toggleDevTools' },
 		],
 	},
 	{
@@ -58,23 +84,23 @@ const menuTemplate = [
 		submenu: [
 			{
 				label: 'Reload',
-				click: () => send('reload'),
+				click: () => send('page', 'reload'),
 				accelerator: 'CommandOrControl+R',
 			},
 			{
 				label: 'Go back',
-				click: () => send('goBack'),
+				click: () => send('page', 'goBack'),
 				accelerator: 'CommandOrControl+Left',
 			},
 			{
 				label: 'Go forward',
-				click: () => send('goForward'),
+				click: () => send('page', 'goForward'),
 				accelerator: 'CommandOrControl+Right',
 			},
 			{ type: 'separator' },
 			{
 				label: 'Inspect',
-				click: () => send('openDevTools'),
+				click: () => send('page', 'openDevTools'),
 				accelerator: 'CommandOrControl+Alt+I',
 			},
 		],

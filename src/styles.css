@@ -32,7 +32,7 @@ header {
 	border-right: var(--border);
 }
 
-input {
+header input {
 	width: 100%;
 	max-width: 100%;
 	height: 100%;
@@ -76,7 +76,7 @@ input:focus {
 	background: var(--background-alt);
 }
 
-webview {
+main {
 	position: fixed;
 	top: var(--header-height);
 	left: 0rem;
@@ -92,4 +92,18 @@ webview {
 	border: var(--border);
 
 	overflow: hidden;
+}
+
+webview {
+	width: 100%;
+	height: 100%;
+}
+
+.settings label {
+	width: 100%;
+}
+
+.settings input {
+	width: 100% !important;
+	max-width: 24rem !important;
 }

@@ -1,5 +1,4 @@
-export function processAddress(address: string): string {
-	const searchEngineString = localStorage.getItem('search') ?? 'https://www.google.com/search?q=%s';
+export function processAddress(address: string, searchEngineString: string): string {
 
 	if (/^http[s]{0,1}\:\/\//.test(address) == true)
 		//valid address

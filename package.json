@@ -3,7 +3,7 @@
 	"scripts": {
 		"start": "tsc; electron .",
 		"build": "esbuild src/index.ts --format=iife --global-name=APP --bundle --outdir=dist --loader:.woff=file --loader:.woff2=file --loader:.ttf=file --loader:.otf=file",
-		"package": ""
+		"package": "npx electron-packager . SleekWeb --platform darwin --arch all --out app --icon ./icon/icon.icns"
 	},
 	"devDependencies": {
 		"electron": "^25.3.2"

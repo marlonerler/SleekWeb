@@ -1,28 +1,52 @@
 import {
 	buildInterface,
+	Button,
 	Component,
 	Container,
 	Div,
+	Header,
 	Input,
 	State,
+	Sheet,
 	TextInputCfg,
 	VStack,
+	Label,
+	LocalStorageState,
+	ScrollArea,
 } from '@frugal-ui/base';
-import {processAddress} from './helpers';
+import { processAddress } from './helpers';
 import './styles.css';
 import { API } from './preload';
 
 declare const electron: typeof API;
 
 export function main() {
+	// Data
 	const inputValue = new State('');
 	const currentTitle = new State('');
 	const currentUrl = new State('');
-	const defaultUrl = localStorage.getItem('default-url') ?? 'about:blank';
-
-	const initialUrl = new URL(window.location.href).searchParams.get('addr') || defaultUrl;
+	const defaultUrl = new LocalStorageState('default-url', 'about:blank');
+	const searchEngineString = new LocalStorageState(
+		'search',
+		'https://www.google.com/search?q=%s',
+	);
+	const initialUrl =
+		new URL(window.location.href).searchParams.get('addr') ||
+		defaultUrl.value;
 	currentUrl.value = initialUrl;
 
+	const isSettingsSheetOpen = new State(false);
+
+	// Comms
+	electron.onNavMessage((item) => {
+		switch (item) {
+			case 'settings':
+				isSettingsSheetOpen.value = true;
+				break;
+		}
+	});
+
+	// Interface
 	buildInterface(
 		VStack(
 			Div().addToClass('window-draggers'),
@@ -49,30 +73,91 @@ export function main() {
 					),
 			),
 
-			Component('webview' as any)
-				.setAttr('src', initialUrl)
-				.access((self: any) => {
-					self.listen('dom-ready', () => {
-						self.createBinding(currentUrl, (newValue: string) => {
-							self.loadURL(processAddress(newValue));
-						});
+			Container(
+				'main',
+				Component('webview' as any)
+					.setAttr('src', processAddress(initialUrl, searchEngineString.value))
+					.access((self: any) => {
+						self.listen('dom-ready', () => {
+							self.createBinding(
+								currentUrl,
+								(newValue: string) => {
+									self.loadURL(
+										processAddress(
+											newValue,
+											searchEngineString.value,
+										),
+									);
+								},
+							);
 
-						electron.onPageMessage((action) => {
-							try {
-								self[action]();
-							} catch {
-								console.error(`Error with ${action}`, self[action]);
-							}
-						});
-					})
-						.listen('page-title-updated', () => {
-							currentTitle.value = self.getTitle();
-							inputValue.value = self.getTitle();
+							electron.onPageMessage((action) => {
+								try {
+									self[action]();
+								} catch {
+									console.error(
+										`Error with ${action}`,
+										self[action],
+									);
+								}
+							});
 						})
-						.listen('did-finish-load', () => {
-							currentUrl._value = self.getURL();
-						});
-				}),
+							.listen('page-title-updated', () => {
+								currentTitle.value = self.getTitle();
+								inputValue.value = self.getTitle();
+								document.title = self.getTitle();
+							})
+							.listen('did-finish-load', () => {
+								currentUrl._value = self.getURL();
+							});
+					}),
+
+				Sheet(
+					{
+						accessibilityLabel: 'settings',
+						isOpen: isSettingsSheetOpen,
+					},
+
+					VStack(
+						Header(
+							{
+								text: 'Settins',
+							},
+							Button({
+								accessibilityLabel: 'close settings',
+								iconName: 'close',
+								action: () =>
+									(isSettingsSheetOpen.value = false),
+							}),
+						),
+
+						ScrollArea(
+							// Start Page
+							Label(
+								'Start page',
+								Input(
+									new TextInputCfg(defaultUrl, 'about:blank'),
+								),
+							),
+							// Search Engine
+							Label(
+								'Search engine',
+								Input(
+									new TextInputCfg(
+										searchEngineString,
+										'%s for search query',
+									),
+								),
+							),
+						)
+						.cssAlignItems('start')
+						.useDefaultSpacing(),
+					)
+						.useDefaultSpacing()
+						.useDefaultPadding()
+						.cssPaddingTop('var(--header-height)'),
+				).addToClass('settings'),
+			),
 		),
 	);
 }
