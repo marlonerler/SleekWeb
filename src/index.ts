@@ -79,7 +79,7 @@ export function main() {
 							})
 							.listen('focus', () => {
 								inputValue.value = currentUrl.value;
-								self.focus();
+								(self as any).select();
 							})
 							.listen(
 								'blur',
@@ -133,8 +133,10 @@ export function main() {
 								currentUrl._value = self.getURL();
 								isLoading.value = false;
 							})
-							.listen('did-start-loading', () => {
+							.listen('will-navigate', () => {
 								currentUrl._value = self.getURL();
+							})
+							.listen('did-start-loading', () => {
 								isLoading.value = true;
 							});
 					}),
