@@ -59,7 +59,9 @@ export function main() {
 	buildInterface(
 		VStack(
 			Div(
-				Text('Loading...').setVisibleIfMatch(isLoading, true).addToClass('progress-texts'),
+				Text('Loading...')
+					.setVisibleIfMatch(isLoading, true)
+					.addToClass('progress-texts'),
 			).setID('background'),
 			Div().setID('window-dragger'),
 			Container(
@@ -67,21 +69,22 @@ export function main() {
 				Input(new TextInputCfg(inputValue, 'Search the web...'))
 					.setAccessibilityLabel('search or enter url')
 					.access((self) =>
-						self.registerKeyboardShortcuts({
-							key: 'Enter',
-							action: () => {
-								currentUrl.value = inputValue.value;
-								self.blur();
-							},
-						}),
-					)
-					.listen(
-						'focus',
-						() => (inputValue.value = currentUrl.value),
-					)
-					.listen(
-						'blur',
-						() => (inputValue.value = currentTitle.value),
+						self
+							.registerKeyboardShortcuts({
+								key: 'Enter',
+								action: () => {
+									currentUrl.value = inputValue.value;
+									self.blur();
+								},
+							})
+							.listen('focus', () => {
+								inputValue.value = currentUrl.value;
+								self.focus();
+							})
+							.listen(
+								'blur',
+								() => (inputValue.value = currentTitle.value),
+							),
 					),
 			),
 
@@ -119,7 +122,11 @@ export function main() {
 						})
 							.listen('page-title-updated', () => {
 								currentTitle.value = self.getTitle();
-								inputValue.value = self.getTitle();
+								if (
+									document.activeElement !=
+									document.querySelector('header input')
+								)
+									inputValue.value = self.getTitle();
 								document.title = self.getTitle();
 							})
 							.listen('did-stop-loading', () => {
