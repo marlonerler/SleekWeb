@@ -1,6 +1,10 @@
 import { app, BrowserWindow, Menu } from 'electron';
 import Path from 'path';
 
+function isDev() {
+	  return process.argv[2] == '--dev';
+}
+
 // Create
 function createWindow(params: string) {
 	const window = new BrowserWindow({
@@ -17,7 +21,7 @@ function createWindow(params: string) {
 
 		webPreferences: {
 			webviewTag: true,
-			preload: Path.join(process.cwd(), 'src', 'preload.js'),
+			preload: Path.join((isDev() ? process.cwd() : process.resourcesPath), 'src', 'preload.js'),
 		},
 	});
 

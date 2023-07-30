@@ -1,9 +1,9 @@
 {
 	"main": "index.js",
 	"scripts": {
-		"start": "tsc; electron .",
+		"start": "tsc; electron . --dev",
 		"build": "esbuild src/index.ts --format=iife --global-name=APP --bundle --outdir=dist --loader:.woff=file --loader:.woff2=file --loader:.ttf=file --loader:.otf=file",
-		"package": "npx electron-packager . SleekWeb --platform darwin --arch all --out app --icon ./icon/icon.icns"
+		"package": "npx electron-packager . SleekWeb --platform darwin --arch x64 --extra-resource ./src/ --out app --icon ./icon/icon.icns"
 	},
 	"devDependencies": {
 		"electron": "^25.3.2"
