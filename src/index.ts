@@ -45,11 +45,20 @@ export function main() {
 				break;
 		}
 	});
+	electron.onStateMessage((state) => {
+		console.log(state);
+		document.body.toggleAttribute('focused', state == 'focus');
+	});
+	electron.onAccentChange((color) => {
+		document.body.style.setProperty('--system-accent', `#${color}`);
+	})
 
 	// Interface
 	buildInterface(
 		VStack(
-			Div().addToClass('window-draggers'),
+			Div()
+				.setID('background'),
+			Div().setID('window-dragger'),
 			Container(
 				'header',
 				Input(new TextInputCfg(inputValue, 'Search the web...'))
@@ -76,7 +85,10 @@ export function main() {
 			Container(
 				'main',
 				Component('webview' as any)
-					.setAttr('src', processAddress(initialUrl, searchEngineString.value))
+					.setAttr(
+						'src',
+						processAddress(initialUrl, searchEngineString.value),
+					)
 					.access((self: any) => {
 						self.listen('dom-ready', () => {
 							self.createBinding(
@@ -150,8 +162,8 @@ export function main() {
 								),
 							),
 						)
-						.cssAlignItems('start')
-						.useDefaultSpacing(),
+							.cssAlignItems('start')
+							.useDefaultSpacing(),
 					)
 						.useDefaultSpacing()
 						.useDefaultPadding()

@@ -1,8 +1,8 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, systemPreferences } from 'electron';
 import Path from 'path';
 
 function isDev() {
-	  return process.argv[2] == '--dev';
+	return process.argv[2] == '--dev';
 }
 
 // Create
@@ -21,23 +21,41 @@ function createWindow(params: string) {
 
 		webPreferences: {
 			webviewTag: true,
-			preload: Path.join((isDev() ? process.cwd() : process.resourcesPath), 'src', 'preload.js'),
+			preload: Path.join(
+				isDev() ? process.cwd() : process.resourcesPath,
+				'src',
+				'preload.js',
+			),
 		},
 	});
 
 	window.loadFile(`dist/index.html`, { search: `?addr=${params}` });
+
+	window.on('focus', () => send(window, 'state', 'focus'));
+	window.on('blur', () => send(window, 'state', 'blur'));
 
 	window.webContents.on('did-attach-webview', (_, contents) => {
 		contents.setWindowOpenHandler((details) => {
 			createWindow(details.url);
 			return { action: 'deny' };
 		});
+
+		if (window.isFocused() == true) send(window, 'state', 'focus');
+		function updateAccent() {
+			send(window, 'accent', systemPreferences.getAccentColor());
+		}
+		systemPreferences.on('accent-color-changed', () => updateAccent());
+		updateAccent();
 	});
 }
 
 // Communication
-function send(channel: string, message: string) {
-	BrowserWindow.getFocusedWindow()?.webContents.send(channel, message);
+function send(
+	window: BrowserWindow | null = BrowserWindow.getFocusedWindow(),
+	channel: string,
+	message: string,
+) {
+	window?.webContents.send(channel, message);
 }
 
 // Menu
@@ -56,7 +74,7 @@ const menuTemplate = [
 			{
 				label: 'Settings...',
 				accelerator: 'CommandOrControl+,',
-				click: () => send('nav', 'settings'),
+				click: () => send(undefined, 'nav', 'settings'),
 			},
 			{ type: 'separator' },
 			{ role: 'quit' },
@@ -80,7 +98,7 @@ const menuTemplate = [
 		submenu: [
 			{ role: 'togglefullscreen' },
 			{ type: 'separator' },
-			//{ role: 'toggleDevTools' },
+			{ role: 'toggleDevTools' },
 		],
 	},
 	{
@@ -88,23 +106,23 @@ const menuTemplate = [
 		submenu: [
 			{
 				label: 'Reload',
-				click: () => send('page', 'reload'),
+				click: () => send(undefined, 'page', 'reload'),
 				accelerator: 'CommandOrControl+R',
 			},
 			{
 				label: 'Go back',
-				click: () => send('page', 'goBack'),
+				click: () => send(undefined, 'page', 'goBack'),
 				accelerator: 'CommandOrControl+Left',
 			},
 			{
 				label: 'Go forward',
-				click: () => send('page', 'goForward'),
+				click: () => send(undefined, 'page', 'goForward'),
 				accelerator: 'CommandOrControl+Right',
 			},
 			{ type: 'separator' },
 			{
 				label: 'Inspect',
-				click: () => send('page', 'openDevTools'),
+				click: () => send(undefined, 'page', 'openDevTools'),
 				accelerator: 'CommandOrControl+Alt+I',
 			},
 		],
@@ -120,8 +138,8 @@ app.whenReady().then(() => {
 	app.on('activate', function () {
 		if (BrowserWindow.getAllWindows().length === 0) createWindow('');
 	});
-});
 
-app.on('window-all-closed', function () {
-	if (process.platform != 'darwin') app.quit();
+	app.on('window-all-closed', function () {
+		if (process.platform != 'darwin') app.quit();
+	});
 });

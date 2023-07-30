@@ -17,6 +17,24 @@ html, body {
 	}
 }
 
+#background {
+	position:  fixed;
+	top: .5rem;
+	left: var(--header-width);
+	right: 0rem;
+	bottom: 0rem;
+
+	border-radius: var(--window-corners);
+	border-top-left-radius: 0rem;
+	
+	background: var(--background-alt);
+	opacity: .2;
+}
+
+body[focused] #background {
+	background: var(--system-accent);
+}
+
 header {
 	position: fixed;
 	top: 0rem;
@@ -62,7 +80,7 @@ input:focus {
 	opacity: 1;
 }
 
-.window-draggers {
+#window-dragger {
 	position: fixed;
 	top: 0rem;
 	left: var(--header-width);
@@ -72,7 +90,7 @@ input:focus {
 	-webkit-app-region: drag;
 }
 
-.window-draggers:hover {
+#window-dragger:hover {
 	background: var(--background-alt);
 }
 
