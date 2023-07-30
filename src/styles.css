@@ -1,5 +1,24 @@
+@keyframes pulse {
+	0%, 100% {
+		opacity: .4;
+	}
+	30%, 60% {
+		opacity: 1
+	}
+}
+
+.progress-texts {
+	animation: pulse 2s infinite;
+	font-size: x-small;
+	font-family: mono-md;
+}
+
 html, body {
 	background: transparent !important;
+}
+
+* {
+	outline: none !important;
 }
 
 :root {
@@ -29,6 +48,8 @@ html, body {
 	
 	background: var(--background-alt);
 	opacity: .2;
+
+	padding: 0rem .5rem;
 }
 
 body[focused] #background {
@@ -94,9 +115,9 @@ input:focus {
 	background: var(--background-alt);
 }
 
-main {
+main, .settings {
 	position: fixed;
-	top: var(--header-height);
+	top: var(--header-height) !important;
 	left: 0rem;
 	width: 100%;
 	height: calc(100% - var(--header-height));
@@ -106,8 +127,7 @@ main {
 	border-top-right-radius: var(--window-corners);
 	border-bottom-left-radius: var(--window-corners);
 	border-bottom-right-radius: var(--window-corners);
-
-	border: var(--border);
+	border: var(--border) !important;
 
 	overflow: hidden;
 }
@@ -117,11 +137,7 @@ webview {
 	height: 100%;
 }
 
-.settings label {
-	width: 100%;
-}
-
-.settings input {
+.settings :is(input, label) {
 	width: 100% !important;
 	max-width: 24rem !important;
 }

@@ -687,9 +687,25 @@ h5.frugal-ui-components {
 }
 
 /* src/styles.css */
+@keyframes pulse {
+  0%, 100% {
+    opacity: .4;
+  }
+  30%, 60% {
+    opacity: 1;
+  }
+}
+.progress-texts {
+  animation: pulse 2s infinite;
+  font-size: x-small;
+  font-family: mono-md;
+}
 html,
 body {
   background: transparent !important;
+}
+* {
+  outline: none !important;
 }
 :root {
   --header-width: 16rem;
@@ -713,6 +729,7 @@ body {
   border-top-left-radius: 0rem;
   background: var(--background-alt);
   opacity: .2;
+  padding: 0rem .5rem;
 }
 body[focused] #background {
   background: var(--system-accent);
@@ -762,9 +779,10 @@ input:focus {
 #window-dragger:hover {
   background: var(--background-alt);
 }
-main {
+main,
+.settings {
   position: fixed;
-  top: var(--header-height);
+  top: var(--header-height) !important;
   left: 0rem;
   width: 100%;
   height: calc(100% - var(--header-height));
@@ -772,17 +790,14 @@ main {
   border-top-right-radius: var(--window-corners);
   border-bottom-left-radius: var(--window-corners);
   border-bottom-right-radius: var(--window-corners);
-  border: var(--border);
+  border: var(--border) !important;
   overflow: hidden;
 }
 webview {
   width: 100%;
   height: 100%;
 }
-.settings label {
-  width: 100%;
-}
-.settings input {
+.settings :is(input, label) {
   width: 100% !important;
   max-width: 24rem !important;
 }

@@ -98,7 +98,7 @@ const menuTemplate = [
 		submenu: [
 			{ role: 'togglefullscreen' },
 			{ type: 'separator' },
-			{ role: 'toggleDevTools' },
+			isDev() ? { role: 'toggleDevTools' } : undefined,
 		],
 	},
 	{

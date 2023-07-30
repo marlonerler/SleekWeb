@@ -13,6 +13,7 @@ import {
 	Label,
 	LocalStorageState,
 	ScrollArea,
+	Text,
 } from '@frugal-ui/base';
 import { processAddress } from './helpers';
 import './styles.css';
@@ -34,6 +35,7 @@ export function main() {
 		new URL(window.location.href).searchParams.get('addr') ||
 		defaultUrl.value;
 	currentUrl.value = initialUrl;
+	const isLoading = new State(true);
 
 	const isSettingsSheetOpen = new State(false);
 
@@ -51,13 +53,14 @@ export function main() {
 	});
 	electron.onAccentChange((color) => {
 		document.body.style.setProperty('--system-accent', `#${color}`);
-	})
+	});
 
 	// Interface
 	buildInterface(
 		VStack(
-			Div()
-				.setID('background'),
+			Div(
+				Text('Loading...').setVisibleIfMatch(isLoading, true).addToClass('progress-texts'),
+			).setID('background'),
 			Div().setID('window-dragger'),
 			Container(
 				'header',
@@ -119,8 +122,13 @@ export function main() {
 								inputValue.value = self.getTitle();
 								document.title = self.getTitle();
 							})
-							.listen('did-finish-load', () => {
+							.listen('did-stop-loading', () => {
 								currentUrl._value = self.getURL();
+								isLoading.value = false;
+							})
+							.listen('did-start-loading', () => {
+								currentUrl._value = self.getURL();
+								isLoading.value = true;
 							});
 					}),
 
@@ -133,7 +141,7 @@ export function main() {
 					VStack(
 						Header(
 							{
-								text: 'Settins',
+								text: 'Settings',
 							},
 							Button({
 								accessibilityLabel: 'close settings',
@@ -161,13 +169,10 @@ export function main() {
 									),
 								),
 							),
-						)
-							.cssAlignItems('start')
-							.useDefaultSpacing(),
+						).useDefaultSpacing(),
 					)
 						.useDefaultSpacing()
-						.useDefaultPadding()
-						.cssPaddingTop('var(--header-height)'),
+						.useDefaultPadding(),
 				).addToClass('settings'),
 			),
 		),
